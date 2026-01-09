@@ -48,8 +48,8 @@ def run_reformer():
     }
 
     models = [
-        #'GraphRNN',
-        #'graphgen',
+        'GraphRNN',
+        'graphgen',
         'Gransformer',
         'DFSGraphTransformer',
         'DFSGraphReformer',
@@ -365,12 +365,12 @@ def run_reformer():
 
             graph_samples_1 = sample(graphs, len(sampled_graphs))
 
-            # fig = generate_sample_plots(
-            #     graph_samples_1 = graph_samples_1,
-            #     graph_samples_2 = sampled_graphs,
-            #     label_1='Original Graphs',
-            #     label_2='Predicted Graphs',
-            # )
+            fig = generate_sample_plots(
+                graph_samples_1 = graph_samples_1,
+                graph_samples_2 = sampled_graphs,
+                label_1='Original Graphs',
+                label_2='Predicted Graphs',
+            )
 
             plt.savefig(f'generated_graphs_dist_{model_type}_{graph_name}.png')
 
