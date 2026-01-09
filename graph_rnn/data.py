@@ -3,10 +3,11 @@ import torch
 from torch.utils.data import Dataset
 import networkx as nx
 from concurrent.futures import ProcessPoolExecutor, as_completed
+import os
 
 from graph_rnn.helper import graph_to_matrix, get_attributes_len_for_graph_rnn, get_random_bfs_seq
 
-MAX_WORKERS = 16
+MAX_WORKERS = os.cpu_count() - 2 if os.cpu_count() and os.cpu_count() > 2 else 1
 
 class Graph_Adj_Matrix_from_file(Dataset):
     """
@@ -161,7 +162,7 @@ def calc_max_prev_node(graphs):
     """
     max_prev_node = []
 
-    with ProcessPoolExecutor(max_workers=10) as executor:
+    with ProcessPoolExecutor(max_workers=MAX_WORKERS) as executor:
         futures = [executor.submit(calc_max_prev_node_helper, graph) for graph in graphs]
 
         for i, future in enumerate(as_completed(futures), 1):

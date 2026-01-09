@@ -11,7 +11,7 @@ import networkx as nx
 import metrics.mmd as mmd
 
 PRINT_TIME = True
-MAX_WORKERS = 48
+MAX_WORKERS = os.cpu_count() - 2 if os.cpu_count() and os.cpu_count() > 2 else 1
 
 
 def degree_worker(G):

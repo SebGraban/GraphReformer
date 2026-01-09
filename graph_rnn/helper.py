@@ -1,8 +1,8 @@
 import networkx as nx
 import torch
+import os
 
-MAX_WORKERS = 16
-
+MAX_WORKERS = os.cpu_count() - 2 if os.cpu_count() and os.cpu_count() > 2 else 1
 
 def get_attributes_len_for_graph_rnn(
     len_node_map, len_edge_map, max_prev_node=None, max_head_and_tail=None

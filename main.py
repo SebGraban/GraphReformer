@@ -23,6 +23,7 @@ from GransFormer.args import BaseArgs
 from GransFormer.Transformer.Models import Transformer
 from GransFormer.Transformer.Optim import MyScheduledOptim
 from GransFormer.predict import generate_graph_exact
+import os
 
 sys.path.append('graphgen')
 
@@ -99,7 +100,7 @@ def run_reformer():
         dfs_code_indices = []
         max_length = 0
         # Generate DFSCodes for all the graphs in the dataset
-        with ProcessPoolExecutor(max_workers=10) as executor:
+        with ProcessPoolExecutor(max_workers=os.cpu_count()-2) as executor:
             futures = [executor.submit(process_graph, graph) for graph in graphs]
 
             for i, future in enumerate(as_completed(futures), 1):
