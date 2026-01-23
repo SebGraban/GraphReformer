@@ -379,7 +379,7 @@ def compute_loss_graph_rnn(model, data, device, feature_map, max_prev_node, max_
     # Set hidden state for edge-level RNN
     # shape of hidden tensor (num_layers, batch_size, hidden_size)
     hidden_edge = hidden_edge.view(1, hidden_edge.size(0), hidden_edge.size(1))
-    hidden_edge_rem_layers = torch.zeros(3, hidden_edge.size(1), hidden_edge.size(2), device=device)
+    hidden_edge_rem_layers = torch.zeros(model['edge_level_rnn'].num_layers - 1, hidden_edge.size(1), hidden_edge.size(2), device=device)
     model['edge_level_rnn'].hidden = torch.cat(
         (hidden_edge, hidden_edge_rem_layers), dim=0)
 
@@ -404,8 +404,12 @@ def compute_loss_graph_rnn(model, data, device, feature_map, max_prev_node, max_
         sum(x_len), 1, len_edge_vec, device=device)), dim=1)
     x_edge[torch.arange(sum(x_len)), x_edge_len - 1, len_edge_vec - 1] = 1
 
-    loss1 = F.binary_cross_entropy(x_pred_node, x_node, reduction='sum')
-    loss2 = F.binary_cross_entropy(x_pred_edge, x_edge, reduction='sum')
+    # Convert targets to indices
+    x_node_indices = x_node.argmax(dim=2).reshape(-1)
+    x_edge_indices = x_edge.argmax(dim=2).reshape(-1)
+
+    loss1 = F.cross_entropy(x_pred_node.reshape(-1, len_node_vec), x_node_indices, ignore_index=0)
+    loss2 = F.cross_entropy(x_pred_edge.reshape(-1, len_edge_vec), x_edge_indices, ignore_index=0)
 
     # Avg (node prediction + edge prediction) error per example
     loss = (loss1 + loss2) / batch_size

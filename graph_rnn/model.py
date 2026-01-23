@@ -252,8 +252,7 @@ def predict_graphs(model, feature_map, device, max_prev_node, max_head_and_tail)
             hidden_edge = model['embedding_node_to_edge'](node_level_output)
 
             hidden_edge_rem_layers = torch.zeros(
-                4 -
-                1, 32, hidden_edge.size(2),
+                model['edge_level_rnn'].num_layers - 1, 32, hidden_edge.size(2),
                 device=device)
             # [num_layers] * [batch_size] * [hidden_len]
             model['edge_level_rnn'].hidden = torch.cat(

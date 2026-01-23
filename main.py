@@ -308,9 +308,9 @@ def run_reformer():
                     args.milestones, args.lr_list, args.sep_optimizer_start_step
                 )
 
-            start = time.time()
-            train_model(model_type, model, train_dataloader, val_dataloader, optimizer, device=device, args=args, model_name=f"best_model_{model_type}_{graph_name}.pt")
-            end = time.time()
+            # start = time.time()
+            # train_model(model_type, model, train_dataloader, val_dataloader, optimizer, device=device, args=args, model_name=f"best_model_{model_type}_{graph_name}.pt")
+            # end = time.time()
 
             if model_type == 'DFSGraphReformer' or model_type == 'DFSGraphTransformer':
                 model.load_state_dict(torch.load(f"best_model_{model_type}_{graph_name}.pt", map_location="cuda" or "cpu"))
