@@ -7,7 +7,7 @@ import os
 
 from graph_rnn.helper import graph_to_matrix, get_attributes_len_for_graph_rnn, get_random_bfs_seq
 
-MAX_WORKERS = os.cpu_count() - 2 if os.cpu_count() and os.cpu_count() > 2 else 1
+MAX_WORKERS = os.cpu_count() if os.cpu_count() and os.cpu_count() > 2 else 1
 
 class Graph_Adj_Matrix_from_file(Dataset):
     """

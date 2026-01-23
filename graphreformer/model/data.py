@@ -82,7 +82,7 @@ def dfs_code_to_sequences(dfs_code, features):
     
     return input_seq, target_seq, n + 1
 
-def create_tf_dataset(dfs_codes, batch_size=32):
+def create_tf_dataset(dfs_codes, batch_size=256):
     """Create TensorFlow dataset from list of DFS codes"""
     # Precompute global features
     features = precompute_global_features(dfs_codes)

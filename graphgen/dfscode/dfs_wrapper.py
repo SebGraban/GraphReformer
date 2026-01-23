@@ -26,7 +26,7 @@ def get_min_dfscode(G, temp_path=tempfile.gettempdir()):
 
     output_fd, output_path = tempfile.mkstemp(dir=temp_path)
 
-    dfscode_bin_path = 'bin/dfscode'
+    dfscode_bin_path = '/teamspace/studios/this_studio/GraphReformer/graphgen/bin/dfscode'
     with open(input_path, 'r') as f:
         subprocess.call([dfscode_bin_path, output_path, '2'], stdin=f)
 

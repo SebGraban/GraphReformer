@@ -25,7 +25,7 @@ from GransFormer.Transformer.Optim import MyScheduledOptim
 from GransFormer.predict import generate_graph_exact
 import os
 
-sys.path.append('graphgen')
+sys.path.append('/teamspace/studios/this_studio/GraphReformer/graphgen')
 
 import metrics.stats as metrics
 
@@ -44,8 +44,8 @@ def run_reformer():
     graph_names = ['lung']
 
     file_dict = {
-        'lung': 'GraphReformer/graphreformer/datasests/Lung/lung.txt',
-        'yeast': 'GraphReformer/graphreformer/datasests/Lung/yeast.txt',
+        'lung': '/teamspace/studios/this_studio/GraphReformer/graphreformer/datasests/Lung/lung.txt',
+        'yeast': '/teamspace/studios/this_studio/GraphReformer/graphreformer/datasests/Lung/yeast.txt',
     }
 
     models = [
@@ -61,16 +61,16 @@ def run_reformer():
 
         if graph_name == 'citeseer_long':
             graphs = produce_random_walk_sampled_graphs(
-                'GraphReformer/graphreformer/datasests/citeseer/citeseer.content',
-                'GraphReformer/graphreformer/datasests/citeseer/citeseer.cites',
+                '/teamspace/studios/this_studio/GraphReformer/graphreformer/datasests/citeseer/citeseer.content',
+                '/teamspace/studios/this_studio/GraphReformer/graphreformer/datasests/citeseer/citeseer.cites',
                 iterations=600,
                 num_factor=4,
                 min_num_edges=20,
             )
         elif graph_name == 'citeseer':
             graphs = produce_random_walk_sampled_graphs(
-                'GraphReformer/graphreformer/datasests/citeseer/citeseer.content',
-                'GraphReformer/graphreformer/datasests/citeseer/citeseer.cites',
+                '/teamspace/studios/this_studio/GraphReformer/graphreformer/datasests/citeseer/citeseer.content',
+                '/teamspace/studios/this_studio/GraphReformer/graphreformer/datasests/citeseer/citeseer.cites',
                 min_num_edges=20,
                 iterations=150,
                 num_factor=10,
@@ -100,7 +100,7 @@ def run_reformer():
         dfs_code_indices = []
         max_length = 0
         # Generate DFSCodes for all the graphs in the dataset
-        with ProcessPoolExecutor(max_workers=os.cpu_count()-2) as executor:
+        with ProcessPoolExecutor(max_workers=os.cpu_count()) as executor:
             futures = [executor.submit(process_graph, graph) for graph in graphs]
 
             for i, future in enumerate(as_completed(futures), 1):
@@ -154,8 +154,8 @@ def run_reformer():
         train_dataset = Subset(full_dataset, train_indices)
         val_dataset   = Subset(full_dataset, val_indices)
 
-        train_dataloader_dfs = torch.utils.data.DataLoader(train_dataset, batch_size=32, shuffle=True)
-        val_dataloader_dfs = torch.utils.data.DataLoader(val_dataset, batch_size=32, shuffle=False)
+        train_dataloader_dfs = torch.utils.data.DataLoader(train_dataset, batch_size=256, shuffle=True)
+        val_dataloader_dfs = torch.utils.data.DataLoader(val_dataset, batch_size=256, shuffle=False)
 
         feature_map = mapping(graphs)
 
@@ -177,15 +177,15 @@ def run_reformer():
                     max_prev_node=max_prev_node,
                     random_bfs=True,
                 )
-                train_dataloader = torch.utils.data.DataLoader(train_dataset_rnn, batch_size=32, shuffle=True)
-                val_dataloader = torch.utils.data.DataLoader(val_dataset_rnn, batch_size=32, shuffle=False)
+                train_dataloader = torch.utils.data.DataLoader(train_dataset_rnn, batch_size=256, shuffle=True)
+                val_dataloader = torch.utils.data.DataLoader(val_dataset_rnn, batch_size=256, shuffle=False)
             elif model_type == 'graphgen':
                 train_dataloader = torch.utils.data.DataLoader(
                     Graph_DFS_code(
                         dfscodes=[dfscodes[i][:-1] for i in train_indices],
                         feature_map=feature_map,
                     ),
-                    batch_size=32,
+                    batch_size=256,
                     shuffle=True,
                 )
                 val_dataloader = torch.utils.data.DataLoader(
@@ -193,7 +193,7 @@ def run_reformer():
                         dfscodes=[dfscodes[i][:-1] for i in val_indices],
                         feature_map=feature_map,
                     ),
-                    batch_size=32,
+                    batch_size=256,
                     shuffle=False,
                 )
             elif model_type == 'Gransformer':
@@ -214,12 +214,12 @@ def run_reformer():
                 )
                 train_dataloader = torch.utils.data.DataLoader(
                     Subset(dataset_G, train_indices),
-                    batch_size=32,
+                    batch_size=256,
                     shuffle=True,
                 )
                 val_dataloader = torch.utils.data.DataLoader(
                     Subset(dataset_G, val_indices),
-                    batch_size=32,
+                    batch_size=256,
                     shuffle=False,
                 )
             elif model_type == 'DFSGraphReformer' or model_type == 'DFSGraphTransformer':
@@ -308,9 +308,9 @@ def run_reformer():
                     args.milestones, args.lr_list, args.sep_optimizer_start_step
                 )
 
-            # start = time.time()
-            # train_model(model_type, model, train_dataloader, val_dataloader, optimizer, device=device, args=args, model_name=f"best_model_{model_type}_{graph_name}.pt")
-            # end = time.time()
+            start = time.time()
+            train_model(model_type, model, train_dataloader, val_dataloader, optimizer, device=device, args=args, model_name=f"best_model_{model_type}_{graph_name}.pt")
+            end = time.time()
 
             if model_type == 'DFSGraphReformer' or model_type == 'DFSGraphTransformer':
                 model.load_state_dict(torch.load(f"best_model_{model_type}_{graph_name}.pt", map_location="cuda" or "cpu"))
@@ -353,7 +353,7 @@ def run_reformer():
                 )
             elif model_type == 'Gransformer':
                 sampled_graphs = []
-                for i in range(1024 // 32):
+                for i in range(1024 // 256):
                     sampled_batch_graphs = generate_graph_exact(model, args, device=device)
                     sampled_graphs.extend(sampled_batch_graphs)
 
@@ -413,7 +413,7 @@ def run_reformer():
                     [total_df,this_df], axis=0, ignore_index=True
                 ).reset_index(drop=True)
 
-    total_df.to_csv('results_new.csv')
+            total_df.to_csv('results_new.csv')
 
 if __name__ == "__main__":
     run_reformer()

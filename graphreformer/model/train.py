@@ -412,7 +412,7 @@ def compute_loss_graph_rnn(model, data, device, feature_map, max_prev_node, max_
     loss2 = F.cross_entropy(x_pred_edge.reshape(-1, len_edge_vec), x_edge_indices, ignore_index=0)
 
     # Avg (node prediction + edge prediction) error per example
-    loss = (loss1 + loss2) / batch_size
+    loss = (loss1 + loss2) / 2
 
     return loss
 

@@ -11,7 +11,7 @@ import networkx as nx
 import metrics.mmd as mmd
 
 PRINT_TIME = True
-MAX_WORKERS = os.cpu_count() - 2 if os.cpu_count() and os.cpu_count() > 2 else 1
+MAX_WORKERS = os.cpu_count() if os.cpu_count() and os.cpu_count() > 2 else 1
 
 
 def degree_worker(G):
@@ -206,7 +206,7 @@ def orca(graph):
         f.write(str(u) + ' ' + str(v) + '\n')
     f.close()
 
-    output = sp.check_output(['bin/orca', 'node', '4', tmp_fname, 'std'])
+    output = sp.check_output(['/teamspace/studios/this_studio/GraphReformer/graphgen/bin/orca', 'node', '4', tmp_fname, 'std'])
     output = output.decode('utf8').strip()
 
     idx = output.find(COUNT_START_STR) + len(COUNT_START_STR)
@@ -387,7 +387,7 @@ def novelty_from_list(graph_ref_list, graph_ref_indices,
 
     try:
         with open(res_path, 'w') as outf:
-            sp.call(['bin/subiso', test_path, pred_path, '0'],
+            sp.call(['/teamspace/studios/this_studio/GraphReformer/graphgen/bin/subiso', test_path, pred_path, '0'],
                     stdout=outf, timeout=timeout)
     except sp.TimeoutExpired:
         pass
@@ -404,7 +404,7 @@ def novelty_from_list(graph_ref_list, graph_ref_indices,
 
     try:
         with open(res_path, 'w') as outf:
-            sp.call(['bin/subiso', pred_path, test_path, '1'],
+            sp.call(['/teamspace/studios/this_studio/GraphReformer/graphgen/bin/subiso', pred_path, test_path, '1'],
                     stdout=outf, timeout=timeout)
     except sp.TimeoutExpired:
         pass
@@ -449,7 +449,7 @@ def uniqueness_from_list(graph_pred_list, graph_pred_indices,
 
     try:
         with open(res_path, 'w') as outf:
-            sp.call(['bin/unique', pred_path], stdout=outf, timeout=timeout)
+            sp.call(['/teamspace/studios/this_studio/GraphReformer/graphgen/bin/unique', pred_path], stdout=outf, timeout=timeout)
     except sp.TimeoutExpired:
         pass
 
@@ -490,7 +490,7 @@ def novelity(graph_ref_path, graph_ref_indices, graph_pred_path, graph_pred_indi
 
     try:
         with open(res_path, 'w') as outf:
-            sp.call(['bin/subiso', test_path, pred_path, '0'],
+            sp.call(['/teamspace/studios/this_studio/GraphReformer/graphgen/bin/subiso', test_path, pred_path, '0'],
                     stdout=outf, timeout=timeout)
     except sp.TimeoutExpired as e:
         outf.close()
@@ -509,7 +509,7 @@ def novelity(graph_ref_path, graph_ref_indices, graph_pred_path, graph_pred_indi
 
     try:
         with open(res_path, 'w') as outf:
-            sp.call(['bin/subiso', pred_path, test_path, '1'],
+            sp.call(['/teamspace/studios/this_studio/GraphReformer/graphgen/bin/subiso', pred_path, test_path, '1'],
                     stdout=outf, timeout=timeout)
     except sp.TimeoutExpired as e:
         outf.close()
@@ -554,7 +554,7 @@ def uniqueness(graph_pred_path, graph_pred_indices, temp_path, timeout):
 
     try:
         with open(res_path, 'w') as outf:
-            sp.call(['bin/unique', pred_path], stdout=outf, timeout=timeout)
+            sp.call(['/teamspace/studios/this_studio/GraphReformer/graphgen/bin/unique', pred_path], stdout=outf, timeout=timeout)
     except sp.TimeoutExpired as e:
         outf.close()
 
