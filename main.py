@@ -296,10 +296,12 @@ def run_reformer():
                 optimizer = torch.optim.AdamW(model.parameters(), lr=1e-4, weight_decay=1e-1)
             elif model_type == 'GraphRNN' or model_type == 'graphgen':
                 # initialize optimizer
+                # Scale learning rate inversely with batch size (original lr=0.003 for batch_size=32)
+                lr = 0.003 * (32 / 256)
                 optimizer = {}
                 for name, net in model.items():
                     optimizer['optimizer_' + name] = torch.optim.Adam(
-                        filter(lambda p: p.requires_grad, net.parameters()), lr=0.003,
+                        filter(lambda p: p.requires_grad, net.parameters()), lr=lr,
                         weight_decay=5e-5)
             elif model_type == 'Gransformer':
                 optimizer = MyScheduledOptim(

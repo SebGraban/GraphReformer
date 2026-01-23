@@ -491,7 +491,7 @@ def train_model(model_type, model, train_dataloader, val_dataloader, optimizer, 
             net.train()
 
     best_val_loss = float('inf')
-    patience = 10
+    patience = 30  # Increased from 10 to account for larger batch sizes
     patience_counter = 0
 
     for epoch in range(num_epochs):
