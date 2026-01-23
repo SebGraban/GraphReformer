@@ -404,15 +404,11 @@ def compute_loss_graph_rnn(model, data, device, feature_map, max_prev_node, max_
         sum(x_len), 1, len_edge_vec, device=device)), dim=1)
     x_edge[torch.arange(sum(x_len)), x_edge_len - 1, len_edge_vec - 1] = 1
 
-    # Convert targets to indices
-    x_node_indices = x_node.argmax(dim=2).reshape(-1)
-    x_edge_indices = x_edge.argmax(dim=2).reshape(-1)
-
-    loss1 = F.cross_entropy(x_pred_node.reshape(-1, len_node_vec), x_node_indices, ignore_index=0)
-    loss2 = F.cross_entropy(x_pred_edge.reshape(-1, len_edge_vec), x_edge_indices, ignore_index=0)
+    loss1 = F.binary_cross_entropy(x_pred_node, x_node, reduction='sum')
+    loss2 = F.binary_cross_entropy(x_pred_edge, x_edge, reduction='sum')
 
     # Avg (node prediction + edge prediction) error per example
-    loss = (loss1 + loss2) / 2
+    loss = (loss1 + loss2) / batch_size
 
     return loss
 
