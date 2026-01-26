@@ -457,12 +457,12 @@ def evaluate(model_type, model, val_loader, args, device):
     return total_loss / len(val_loader)
 
 
-def train_model(model_type, model, train_dataloader, val_dataloader, optimizer, device, args, model_name, num_epochs=10):
+def train_model(model_type, model, train_dataloader, val_dataloader, optimizer, device, args, model_name, num_epochs=1000):
     if model_type == 'Gransformer':
         if args.estimate_num_nodes or args.weight_positions:
             print('estimation of num_nodes_prob started')
             num_nodes_prob = np.zeros(args.max_num_node + 1)
-            for epoch in range(10):
+            for epoch in range(num_epochs):
                 print(epoch, ' ', end='')
                 sys.stdout.flush()
                 for data in train_dataloader:
