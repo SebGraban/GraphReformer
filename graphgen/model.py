@@ -202,7 +202,7 @@ def create_model(feature_map, device):
 
     return model
 
-def predict_graphgen_graphs(model, feature_map, device):
+def predict_graphgen_graphs(model, feature_map, device, loss_type='BCE'):
 
     for _, net in model.items():
         net.eval()
@@ -239,11 +239,19 @@ def predict_graphgen_graphs(model, feature_map, device):
             vertex2 = model['output_vertex2'](
                 rnn_output).reshape(32, -1)
 
-            timestamp1 = Categorical(timestamp1).sample()
-            timestamp2 = Categorical(timestamp2).sample()
-            vertex1 = Categorical(vertex1).sample()
-            edge = Categorical(edge).sample()
-            vertex2 = Categorical(vertex2).sample()
+            # Handle different loss types for sampling
+            if loss_type == 'BCE':
+                timestamp1 = Categorical(timestamp1).sample()
+                timestamp2 = Categorical(timestamp2).sample()
+                vertex1 = Categorical(vertex1).sample()
+                edge = Categorical(edge).sample()
+                vertex2 = Categorical(vertex2).sample()
+            elif loss_type == 'NLL':
+                timestamp1 = Categorical(logits=timestamp1).sample()
+                timestamp2 = Categorical(logits=timestamp2).sample()
+                vertex1 = Categorical(logits=vertex1).sample()
+                edge = Categorical(logits=edge).sample()
+                vertex2 = Categorical(logits=vertex2).sample()
 
             rnn_input = torch.zeros(
                 (32, 1, feature_len), device=device)

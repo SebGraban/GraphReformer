@@ -199,7 +199,7 @@ def predict_graphs(model, feature_map, device, max_prev_node, max_head_and_tail)
     for _, net in model.items():
         net.eval()
 
-    max_num_node = 40
+    max_num_node = feature_map['max_nodes']
     len_node_vec, len_edge_vec, num_nodes_to_consider = get_attributes_len_for_graph_rnn(
         len(feature_map['node_forward']), len(feature_map['edge_forward']),
         max_prev_node, max_head_and_tail)

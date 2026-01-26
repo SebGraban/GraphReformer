@@ -352,6 +352,7 @@ def run_reformer():
                     model,
                     feature_map,
                     device=device,
+                    loss_type='BCE',
                 )
             elif model_type == 'Gransformer':
                 sampled_graphs = []
